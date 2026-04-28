@@ -2,6 +2,7 @@ import 'package:firebase_practice/screens/dashboard_screen.dart';
 import 'package:firebase_practice/screens/forgot_password.dart';
 import 'package:firebase_practice/screens/signup_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -13,6 +14,8 @@ class LoginScreen extends StatefulWidget {
 class _LoginScreenState extends State<LoginScreen> {
   var emailC = TextEditingController();
   var passwordC = TextEditingController();
+
+  bool _obscurePassword = true;
 
   @override
   Widget build(BuildContext context) {
@@ -36,9 +39,29 @@ class _LoginScreenState extends State<LoginScreen> {
             TextField(
               controller: passwordC,
               keyboardType: TextInputType.text,
+              obscureText: _obscurePassword,
               decoration: InputDecoration(
                 border: OutlineInputBorder(),
                 labelText: "Password",
+                suffixIcon: IconButton(onPressed: (){
+
+                setState(() {
+
+                  _obscurePassword = !_obscurePassword;
+
+                  // method 2
+                 // _obscurePassword = _obscurePassword ? false : true;
+
+                  //
+                  // method 1
+                  // if( _obscurePassword == true){
+                  //   _obscurePassword = false;
+                  // }
+                  // else{
+                  //   _obscurePassword = true;
+                  // }
+                });
+                }, icon: Icon( _obscurePassword ? Icons.visibility : Icons.visibility_off))
               ),
             ),
 
@@ -64,7 +87,17 @@ class _LoginScreenState extends State<LoginScreen> {
                 String email = emailC.text.trim();
                 String password = passwordC.text.trim();
 
-                if (email.isEmpty) {}
+                if (email.isEmpty) {
+                  Fluttertoast.showToast(msg: 'Please provide email');
+                  return;
+                }
+
+                if (password.isEmpty) {
+                  Fluttertoast.showToast(msg: 'Please provide password');
+                  return;
+                }
+
+                // after successful login
                 Navigator.of(context).push(
                   MaterialPageRoute(
                     builder: (context) {
