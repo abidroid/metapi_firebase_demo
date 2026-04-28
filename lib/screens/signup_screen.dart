@@ -13,71 +13,119 @@ class _SignupScreenState extends State<SignupScreen> {
   var emailC = TextEditingController();
   var passwordC = TextEditingController();
   var confirmPasswordC = TextEditingController();
+
+  String? selectedGender = 'Male'; // 'Male, 'Female', 'Other'
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.cyanAccent,
         title: Text("Sign Up Screen"),
-      ),body: Padding(
+      ),
+      body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: ListView(
-        children: [
-          TextField(
-            controller: nameC,
-            keyboardType: TextInputType.text,
-            decoration: InputDecoration(
-              border: OutlineInputBorder(),
-              labelText: "Name",
-            ),),
-
-          SizedBox(height: 25,),
-
-          TextField(
-            controller: phoneC,
-            keyboardType: TextInputType.number,
-            decoration: InputDecoration(
-              border: OutlineInputBorder(),
-              labelText: "Phone",
-            ),),
-
-          SizedBox(height: 25,),
-
-          TextField(
-            controller: emailC,
-            keyboardType: TextInputType.text,
-            decoration: InputDecoration(
-              border: OutlineInputBorder(),
-              labelText: "Email",
-            ),),
-
-          SizedBox(height: 25,),
-
-          TextField(
-            controller: passwordC,
-            keyboardType: TextInputType.text,
-            decoration: InputDecoration(
-              border: OutlineInputBorder(),
-              labelText: "Password",
-            ),),
-
-          SizedBox(height: 25,),
-
-          TextField(
-            controller: confirmPasswordC,
-            keyboardType: TextInputType.text,
-            decoration: InputDecoration(
-              border: OutlineInputBorder(),
-              labelText: "Confirm Password",
-            ),),
-
-          SizedBox(height: 25,),
-
-          ElevatedButton(onPressed: (){}, child: Text("REGISTER")),
-        ],
+          children: [
+            TextField(
+              controller: nameC,
+              keyboardType: TextInputType.text,
+              decoration: InputDecoration(
+                border: OutlineInputBorder(),
+                labelText: "Name",
+              ),
             ),
-      ),
 
+            SizedBox(height: 25),
+
+            Text('Gender'),
+            RadioGroup<String>(
+              groupValue: selectedGender,
+              onChanged: (String? newValue) {
+                setState(() {
+                  selectedGender = newValue;
+                });
+              },
+              child: Row(
+                mainAxisAlignment: .spaceBetween,
+                children: [
+                  Row(
+                    children: [
+                      Radio(value: 'Male'),
+                      Text('Male'),
+                    ],
+                  ),
+                  Row(
+                    children: [
+                      Radio(value: 'Female'),
+                      Text('Female'),
+                    ],
+                  ),
+                  Row(
+                    children: [
+                      Radio(value: 'Other'),
+                      Text('Other'),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+
+            TextField(
+              controller: phoneC,
+              keyboardType: TextInputType.number,
+              decoration: InputDecoration(
+                border: OutlineInputBorder(),
+                labelText: "Phone",
+              ),
+            ),
+
+            SizedBox(height: 25),
+
+            TextField(
+              controller: emailC,
+              keyboardType: TextInputType.text,
+              decoration: InputDecoration(
+                border: OutlineInputBorder(),
+                labelText: "Email",
+              ),
+            ),
+
+            SizedBox(height: 25),
+
+            TextField(
+              controller: passwordC,
+              keyboardType: TextInputType.text,
+              decoration: InputDecoration(
+                border: OutlineInputBorder(),
+                labelText: "Password",
+              ),
+            ),
+
+            SizedBox(height: 25),
+
+            TextField(
+              controller: confirmPasswordC,
+              keyboardType: TextInputType.text,
+              decoration: InputDecoration(
+                border: OutlineInputBorder(),
+                labelText: "Confirm Password",
+              ),
+            ),
+
+            SizedBox(height: 25),
+
+            ElevatedButton(onPressed: () {
+              // Front End Validations
+
+              // 1. Empty
+              // 2. password should be 8 or more characters long
+              // 3. passwords should match
+              // 4. password visibility toggle
+            }, child: Text("REGISTER")),
+          ],
+        ),
+      ),
     );
   }
 }
