@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_practice/screens/add_task_screen.dart';
 import 'package:firebase_practice/screens/login_screen.dart';
 import 'package:firebase_practice/screens/profile_screen.dart';
@@ -41,10 +42,14 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   TextButton(onPressed: (){
                     Navigator.of(context).pop();
                   }, child: Text('NO'))  ,
-                  TextButton(onPressed: (){
+                  TextButton(onPressed: () async {
                     Navigator.of(context).pop();
 
-                    Navigator.of(context).push(MaterialPageRoute(builder: (context){
+                    await FirebaseAuth.instance.signOut();
+
+                    // current screen is Dashboard
+                    // it will removed from the navigation stack
+                    Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context){
                       return LoginScreen();
 
                     }));

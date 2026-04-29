@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_practice/screens/dashboard_screen.dart';
 import 'package:firebase_practice/screens/forgot_password.dart';
 import 'package:firebase_practice/screens/signup_screen.dart';
@@ -83,7 +84,7 @@ class _LoginScreenState extends State<LoginScreen> {
             SizedBox(height: 20),
 
             ElevatedButton(
-              onPressed: () {
+              onPressed: () async {
                 String email = emailC.text.trim();
                 String password = passwordC.text.trim();
 
@@ -98,13 +99,31 @@ class _LoginScreenState extends State<LoginScreen> {
                 }
 
                 // after successful login
-                Navigator.of(context).push(
-                  MaterialPageRoute(
-                    builder: (context) {
-                      return DashboardScreen();
-                    },
-                  ),
-                );
+                FirebaseAuth auth = FirebaseAuth.instance;
+
+                try{
+                  UserCredential userCredential =  await auth.signInWithEmailAndPassword(email: email, password: password);
+
+                  if( userCredential.user != null ){
+                    Navigator.of(context).pushReplacement(
+                      MaterialPageRoute(
+                        builder: (context) {
+                          return DashboardScreen();
+                        },
+                      ),
+                    );
+
+                  }
+                }catch(e){
+
+                  ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text(e.toString()))
+                  );
+                }
+
+
+
+
               },
               child: Text("Login"),
             ),

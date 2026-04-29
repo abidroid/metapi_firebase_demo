@@ -1,4 +1,6 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_practice/screens/dashboard_screen.dart';
 import 'package:firebase_practice/screens/login_screen.dart';
 import 'package:flutter/material.dart';
 
@@ -23,7 +25,7 @@ class MyApp extends StatelessWidget {
 
         colorScheme: .fromSeed(seedColor: Colors.deepPurple),
       ),
-      home: const LoginScreen(),
+      home: FirebaseAuth.instance.currentUser != null ? DashboardScreen() : LoginScreen(),
     );
   }
 }
