@@ -1,4 +1,6 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 
 class SignupScreen extends StatefulWidget {
   const SignupScreen({super.key});
@@ -115,13 +117,44 @@ class _SignupScreenState extends State<SignupScreen> {
 
             SizedBox(height: 25),
 
-            ElevatedButton(onPressed: () {
+            ElevatedButton(onPressed: () async {
               // Front End Validations
 
               // 1. Empty
               // 2. password should be 8 or more characters long
               // 3. passwords should match
               // 4. password visibility toggle
+
+              String name = nameC.text.trim();
+              String phone = phoneC.text.trim();
+              String email = emailC.text.trim();
+              String password = passwordC.text.trim();
+
+              if( password.length < 6 ){
+                Fluttertoast.showToast(msg: 'Weak Password');
+                return;
+              }
+
+
+              FirebaseAuth auth = FirebaseAuth.instance;
+
+              try{
+                UserCredential? userCredentials =  await auth.createUserWithEmailAndPassword(email: email, password: password);
+
+                if( userCredentials.user != null ){
+                  String userId = userCredentials.user!.uid!;
+                  // now store the user info inside database
+
+                }
+
+              } catch (e){
+
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(content: Text(e.toString()))
+                );
+              }
+
+
             }, child: Text("REGISTER")),
           ],
         ),

@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "883796312862",
+    "project_id": "metapitodo",
+    "storage_bucket": "metapitodo.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:883796312862:android:47aab9ab09f9064bd0bf0f",
+        "android_client_info": {
+          "package_name": "com.metapi.firebase_practice"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDjF7wWHRtfy4KKG7nQm0H86Rp4uHcwkN4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
