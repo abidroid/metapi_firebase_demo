@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 class ForgotPassword extends StatefulWidget {
@@ -8,6 +9,8 @@ class ForgotPassword extends StatefulWidget {
 }
 
 class _ForgotPasswordState extends State<ForgotPassword> {
+
+  var emailC = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -22,14 +25,22 @@ class _ForgotPasswordState extends State<ForgotPassword> {
           spacing: 20,
           children: [
             TextField(
-
+              controller: emailC,
               keyboardType: TextInputType.text,
               decoration: InputDecoration(
                 border: OutlineInputBorder(),
                 labelText: "Email",
               ),),
 
-            ElevatedButton(onPressed: (){}, child: Text("Send Password Reset Email")),
+            ElevatedButton(onPressed: (){
+
+              String email = emailC.text.trim();
+
+              FirebaseAuth auth = FirebaseAuth.instance;
+
+              auth.sendPasswordResetEmail(email: email);
+
+            }, child: Text("Send Password Reset Email")),
           ],
         ),
       ),
