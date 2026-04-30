@@ -25,7 +25,9 @@ class MyApp extends StatelessWidget {
 
         colorScheme: .fromSeed(seedColor: Colors.deepPurple),
       ),
-      home: FirebaseAuth.instance.currentUser != null ? DashboardScreen() : LoginScreen(),
+      home: FirebaseAuth.instance.currentUser != null
+          && FirebaseAuth.instance.currentUser!.emailVerified
+          ? DashboardScreen() : LoginScreen(),
     );
   }
 }

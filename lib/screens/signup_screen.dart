@@ -140,6 +140,7 @@ class _SignupScreenState extends State<SignupScreen> {
 
               try{
                 UserCredential? userCredentials =  await auth.createUserWithEmailAndPassword(email: email, password: password);
+                Fluttertoast.showToast(msg: 'User Registered');
 
                 if( userCredentials.user != null ){
                   String userId = userCredentials.user!.uid!;

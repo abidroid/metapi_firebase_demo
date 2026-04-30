@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_practice/screens/dashboard_screen.dart';
+import 'package:firebase_practice/screens/email_verification_screen.dart';
 import 'package:firebase_practice/screens/forgot_password.dart';
 import 'package:firebase_practice/screens/signup_screen.dart';
 import 'package:flutter/material.dart';
@@ -105,14 +106,30 @@ class _LoginScreenState extends State<LoginScreen> {
                   UserCredential userCredential =  await auth.signInWithEmailAndPassword(email: email, password: password);
 
                   if( userCredential.user != null ){
-                    Navigator.of(context).pushReplacement(
-                      MaterialPageRoute(
-                        builder: (context) {
-                          return DashboardScreen();
-                        },
-                      ),
-                    );
 
+                    // check if email is verified
+
+                    if( FirebaseAuth.instance.currentUser!.emailVerified){
+                      //
+
+                      Navigator.of(context).pushReplacement(
+                        MaterialPageRoute(
+                          builder: (context) {
+                            return DashboardScreen();
+                          },
+                        ),
+                      );
+                    }else{
+
+
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (context) {
+                            return EmailVerificationScreen();
+                          },
+                        ),
+                      );
+                    }
                   }
                 }catch(e){
 
