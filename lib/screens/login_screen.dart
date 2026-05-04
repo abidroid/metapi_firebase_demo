@@ -86,6 +86,10 @@ class _LoginScreenState extends State<LoginScreen> {
 
             ElevatedButton(
               onPressed: () async {
+                print('***********************************88');
+                print('login button pressed');
+                print('***********************************88');
+
                 String email = emailC.text.trim();
                 String password = passwordC.text.trim();
 
@@ -99,6 +103,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   return;
                 }
 
+                print('login');
                 // after successful login
                 FirebaseAuth auth = FirebaseAuth.instance;
 
@@ -137,10 +142,6 @@ class _LoginScreenState extends State<LoginScreen> {
                       SnackBar(content: Text(e.toString()))
                   );
                 }
-
-
-
-
               },
               child: Text("Login"),
             ),

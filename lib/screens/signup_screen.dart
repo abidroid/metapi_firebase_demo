@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -117,46 +118,62 @@ class _SignupScreenState extends State<SignupScreen> {
 
             SizedBox(height: 25),
 
-            ElevatedButton(onPressed: () async {
-              // Front End Validations
+            ElevatedButton(
+              onPressed: () async {
+                // Front End Validations
 
-              // 1. Empty
-              // 2. password should be 8 or more characters long
-              // 3. passwords should match
-              // 4. password visibility toggle
+                // 1. Empty
+                // 2. password should be 8 or more characters long
+                // 3. passwords should match
+                // 4. password visibility toggle
 
-              String name = nameC.text.trim();
-              String phone = phoneC.text.trim();
-              String email = emailC.text.trim();
-              String password = passwordC.text.trim();
+                String name = nameC.text.trim();
+                String phone = phoneC.text.trim();
+                String email = emailC.text.trim();
+                String password = passwordC.text.trim();
 
-              if( password.length < 6 ){
-                Fluttertoast.showToast(msg: 'Weak Password');
-                return;
-              }
-
-
-              FirebaseAuth auth = FirebaseAuth.instance;
-
-              try{
-                UserCredential? userCredentials =  await auth.createUserWithEmailAndPassword(email: email, password: password);
-                Fluttertoast.showToast(msg: 'User Registered');
-
-                if( userCredentials.user != null ){
-                  String userId = userCredentials.user!.uid!;
-                  // now store the user info inside database
-
+                if (password.length < 6) {
+                  Fluttertoast.showToast(msg: 'Weak Password');
+                  return;
                 }
 
-              } catch (e){
+                FirebaseAuth auth = FirebaseAuth.instance;
 
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(content: Text(e.toString()))
-                );
-              }
+                try {
+                  UserCredential? userCredentials = await auth
+                      .createUserWithEmailAndPassword(
+                        email: email,
+                        password: password,
+                      );
 
+                  if (userCredentials.user != null) {
+                    String userId = userCredentials.user!.uid!;
+                    // now store the user info inside database
 
-            }, child: Text("REGISTER")),
+                    FirebaseFirestore database = FirebaseFirestore.instance;
+
+                    // write data - save data
+                    await database.collection("users").doc(userId).set({
+                      'name': name,
+                      'phone': phone,
+                      'gender': selectedGender,
+                      'email': email,
+                      'uid': userId,
+                      'photo': null,
+                      'createdOn':
+                          DateTime.now().millisecondsSinceEpoch, // timestamp
+                    });
+
+                    Fluttertoast.showToast(msg: 'User Registered');
+                  }
+                } catch (e) {
+                  ScaffoldMessenger.of(
+                    context,
+                  ).showSnackBar(SnackBar(content: Text(e.toString())));
+                }
+              },
+              child: Text("REGISTER"),
+            ),
           ],
         ),
       ),
