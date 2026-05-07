@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_practice/screens/add_task_screen.dart';
 import 'package:firebase_practice/screens/login_screen.dart';
 import 'package:firebase_practice/screens/profile_screen.dart';
+import 'package:firebase_practice/util/functions.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 
@@ -102,19 +103,77 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
                     QueryDocumentSnapshot taskDocument = documents[index];
 
-                    return ListTile(
-                      leading: Checkbox(value: taskDocument['isCompleted'], onChanged: (bool? checked){
+                    return Card(
+                      color: Colors.cyan[50],
+                      child: ListTile(
+                        leading: Checkbox(
+                            value: taskDocument['isCompleted'],
+                            onChanged: (bool? checked) async{
 
-                      }),
+                              await taskDocument.reference.update({
+                                'isCompleted': checked
+                              });
 
-                      title: Text(taskDocument['taskName']),
-                      subtitle: Text(taskDocument['createdOn'].toString()),
-                      trailing: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          IconButton(onPressed: (){}, icon: Icon(Icons.edit)),
-                          IconButton(onPressed: (){}, icon: Icon(Icons.delete)),
-                        ],
+                        }),
+                      
+                        title: Text(taskDocument['taskName']),
+                        subtitle: Text(getFormattedDate(taskDocument['createdOn'])),
+                        trailing: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            IconButton(onPressed: (){
+                              showModalBottomSheet(context: context, builder: (bsContext){
+
+                                var taskNameController = TextEditingController(text: taskDocument['taskName']);
+
+                                return Padding(
+                                  padding: const EdgeInsets.all(16.0),
+                                  child: Column(
+                                    children: [
+                                      TextField(
+                                        controller: taskNameController,
+                                      ),
+                                      ElevatedButton(onPressed: () async {
+
+                                        String updatedTaskName = taskNameController.text.trim();
+                                        await taskDocument.reference.update({
+                                          'taskName': updatedTaskName
+                                        });
+
+
+                                        Navigator.of(bsContext).pop();
+
+                                      }, child: Text('Update')),
+                                    ],
+                                  ),
+                                );
+                              });
+                            }, icon: Icon(Icons.edit)),
+                            IconButton(onPressed: (){
+
+                              showDialog(context: context, builder: (context){
+                                return AlertDialog(
+                                  title: Text('Confirmation'),
+                                  content: Text("Are you sure to Delete ? "),
+                                  actions: [
+                                    TextButton(onPressed: (){
+                                      Navigator.of(context).pop();
+                                    }, child: Text('No')),
+                                    TextButton(onPressed: () async {
+
+                                    await  taskDocument.reference.delete();
+
+                                    Navigator.of(context).pop();
+
+                                    }, child: Text('Yes')),
+
+
+                                  ],
+                                );
+                              });
+                            }, icon: Icon(Icons.delete)),
+                          ],
+                        ),
                       ),
                     );
 
