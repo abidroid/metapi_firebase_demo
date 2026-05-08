@@ -3,11 +3,13 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_practice/screens/dashboard_screen.dart';
 import 'package:firebase_practice/screens/login_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
 
 void main() async {
 
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(); // connection establish
+  await MobileAds.instance.initialize();
 
 
   runApp(const MyApp());

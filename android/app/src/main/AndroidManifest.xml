@@ -1,8 +1,17 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <uses-permission android:name="INTERNET"/>
+
+<!--    ca-app-pub-7973753825375839~7256691993-->
     <application
-        android:label="firebase_practice"
+        android:label="Metapi Todo"
         android:name="${applicationName}"
-        android:icon="@mipmap/ic_launcher">
+        android:icon="@mipmap/launcher_icon">
+
+        <meta-data
+            android:name="com.google.android.gms.ads.APPLICATION_ID"
+            android:value="ca-app-pub-7973753825375839~7256691993"/>
+
         <activity
             android:name=".MainActivity"
             android:exported="true"

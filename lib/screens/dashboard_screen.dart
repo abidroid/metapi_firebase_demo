@@ -7,6 +7,9 @@ import 'package:firebase_practice/util/functions.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 
+import '../util/interstitial_ad_helper.dart';
+import '../widgets/banner_ad_widget.dart';
+
 class DashboardScreen extends StatefulWidget {
   const DashboardScreen({super.key});
 
@@ -19,6 +22,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
   // fetch todos from firestore database
 
   CollectionReference? taskReference;
+  final InterstitialAdHelper _interstitialAdHelper = InterstitialAdHelper();
 
   @override
   void initState() {
@@ -28,18 +32,34 @@ class _DashboardScreenState extends State<DashboardScreen> {
         .collection('tasks')
         .doc(FirebaseAuth.instance.currentUser!.uid!)
         .collection('tasks');
+
+    _interstitialAdHelper.loadAd(); // preload on init
   }
 
+  @override
+  void dispose() {
+    _interstitialAdHelper.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       floatingActionButton: FloatingActionButton(onPressed: (){
 
-        Navigator.of(context).push(MaterialPageRoute(builder: (context){
-          return AddTaskScreen();
+        _interstitialAdHelper.showAd(
+          onAdDismissed: () {
+            // Navigate to AddTaskScreen after ad is dismissed
+            Navigator.of(context).push(MaterialPageRoute(builder: (context) {
+              return const AddTaskScreen();
+            }));
+          },
+        );
 
-        }));
+        // Navigator.of(context).push(MaterialPageRoute(builder: (context){
+        //   return AddTaskScreen();
+        //
+        // }));
       }, child: Icon(Icons.add),),
       appBar: AppBar(
         backgroundColor: Colors.cyanAccent,
@@ -97,87 +117,95 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 return Center(child: Text("No Todos Yet"));
               }
 
-              return ListView.builder(
-                  itemCount: documents.length,
-                  itemBuilder: (context, index){
+              return Column(
+                children: [
+                  const BannerAdWidget(), // 👈 placed at the top
 
-                    QueryDocumentSnapshot taskDocument = documents[index];
-
-                    return Card(
-                      color: Colors.cyan[50],
-                      child: ListTile(
-                        leading: Checkbox(
-                            value: taskDocument['isCompleted'],
-                            onChanged: (bool? checked) async{
-
-                              await taskDocument.reference.update({
-                                'isCompleted': checked
-                              });
-
+                  Expanded(
+                    child: ListView.builder(
+                        itemCount: documents.length,
+                        itemBuilder: (context, index){
+                    
+                          QueryDocumentSnapshot taskDocument = documents[index];
+                    
+                          return Card(
+                            color: Colors.cyan[50],
+                            child: ListTile(
+                              leading: Checkbox(
+                                  value: taskDocument['isCompleted'],
+                                  onChanged: (bool? checked) async{
+                    
+                                    await taskDocument.reference.update({
+                                      'isCompleted': checked
+                                    });
+                    
+                              }),
+                            
+                              title: Text(taskDocument['taskName']),
+                              subtitle: Text(getFormattedDate(taskDocument['createdOn'])),
+                              trailing: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  IconButton(onPressed: (){
+                                    showModalBottomSheet(context: context, builder: (bsContext){
+                    
+                                      var taskNameController = TextEditingController(text: taskDocument['taskName']);
+                    
+                                      return Padding(
+                                        padding: const EdgeInsets.all(16.0),
+                                        child: Column(
+                                          children: [
+                                            TextField(
+                                              controller: taskNameController,
+                                            ),
+                                            ElevatedButton(onPressed: () async {
+                    
+                                              String updatedTaskName = taskNameController.text.trim();
+                                              await taskDocument.reference.update({
+                                                'taskName': updatedTaskName
+                                              });
+                    
+                    
+                                              Navigator.of(bsContext).pop();
+                    
+                                            }, child: Text('Update')),
+                                          ],
+                                        ),
+                                      );
+                                    });
+                                  }, icon: Icon(Icons.edit)),
+                                  IconButton(onPressed: (){
+                    
+                                    showDialog(context: context, builder: (context){
+                                      return AlertDialog(
+                                        title: Text('Confirmation'),
+                                        content: Text("Are you sure to Delete ? "),
+                                        actions: [
+                                          TextButton(onPressed: (){
+                                            Navigator.of(context).pop();
+                                          }, child: Text('No')),
+                                          TextButton(onPressed: () async {
+                    
+                                          await  taskDocument.reference.delete();
+                    
+                                          Navigator.of(context).pop();
+                    
+                                          }, child: Text('Yes')),
+                    
+                    
+                                        ],
+                                      );
+                                    });
+                                  }, icon: Icon(Icons.delete)),
+                                ],
+                              ),
+                            ),
+                          );
+                    
                         }),
-                      
-                        title: Text(taskDocument['taskName']),
-                        subtitle: Text(getFormattedDate(taskDocument['createdOn'])),
-                        trailing: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            IconButton(onPressed: (){
-                              showModalBottomSheet(context: context, builder: (bsContext){
-
-                                var taskNameController = TextEditingController(text: taskDocument['taskName']);
-
-                                return Padding(
-                                  padding: const EdgeInsets.all(16.0),
-                                  child: Column(
-                                    children: [
-                                      TextField(
-                                        controller: taskNameController,
-                                      ),
-                                      ElevatedButton(onPressed: () async {
-
-                                        String updatedTaskName = taskNameController.text.trim();
-                                        await taskDocument.reference.update({
-                                          'taskName': updatedTaskName
-                                        });
-
-
-                                        Navigator.of(bsContext).pop();
-
-                                      }, child: Text('Update')),
-                                    ],
-                                  ),
-                                );
-                              });
-                            }, icon: Icon(Icons.edit)),
-                            IconButton(onPressed: (){
-
-                              showDialog(context: context, builder: (context){
-                                return AlertDialog(
-                                  title: Text('Confirmation'),
-                                  content: Text("Are you sure to Delete ? "),
-                                  actions: [
-                                    TextButton(onPressed: (){
-                                      Navigator.of(context).pop();
-                                    }, child: Text('No')),
-                                    TextButton(onPressed: () async {
-
-                                    await  taskDocument.reference.delete();
-
-                                    Navigator.of(context).pop();
-
-                                    }, child: Text('Yes')),
-
-
-                                  ],
-                                );
-                              });
-                            }, icon: Icon(Icons.delete)),
-                          ],
-                        ),
-                      ),
-                    );
-
-                  });
+                  ),
+                ],
+              );
 
 
             }else{
